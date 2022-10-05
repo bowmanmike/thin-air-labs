@@ -3,7 +3,6 @@ require_relative "../discount_calculator"
 RSpec.describe DiscountCalculator do
   context "#calculate" do
     it "correctly calculates the discount for a complex order" do
-      skip
       order = {shirt_1: 2, shirt_2: 2, shirt_3: 2, shirt_4: 1, shirt_5: 1}
       calculator = DiscountCalculator.new(order)
 
