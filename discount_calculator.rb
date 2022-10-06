@@ -26,7 +26,9 @@ class DiscountCalculator
   end
 
   def discount_for_group_size(size)
-    DISCOUNTS.find { |discount| discount[:items] == size } || {price_savings: 0}
+    return {price_savings: 0} if size == 1
+
+    DISCOUNTS.find { |discount| discount[:items] == size }
   end
 
   def price_savings_for_group_size(size)
