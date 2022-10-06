@@ -35,7 +35,7 @@ class DiscountCalculator
       until items.empty?
         group = items.uniq { |item| item.name }.take(n) # Take the biggest possible group of unique items, up to size n
         groups << group
-        items -= group # Array#- remove *all* matching elements, so we can't just use symbols or strings to represent items
+        items -= group # Remove all discounted items from the pool of remaining items
       end
 
       amount_saved = groups.map { |group| price_savings_for_group_size(group.count) }.sum
@@ -64,13 +64,16 @@ class DiscountCalculator
     discount[:price_savings]
   end
 
+  def discount_items_range
+    Range.new(*DISCOUNTS.minmax_by { |discount| discount[:items] }.map { |discount| discount[:items] })
+  end
+
+  # Converts the provided input into the required internal representation
+  # Due to the way the Array#- method works, we need to use distinct object for
+  # each line item, rather than just using symbols or strings
   def normalize_order(raw_order)
     raw_order.reduce([]) do |arr, (name, quantity)|
       arr << quantity.times.map { LineItem.new(name: name) }
     end.flatten
-  end
-
-  def discount_items_range
-    Range.new(*DISCOUNTS.minmax_by { |discount| discount[:items] }.map { |discount| discount[:items] })
   end
 end
