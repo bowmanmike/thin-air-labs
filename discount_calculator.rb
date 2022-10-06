@@ -28,6 +28,8 @@ class DiscountCalculator
   # Walks through every possible combination of discounts and returns the
   # largest possible total savings.
   def greatest_possible_amount_saved
+    # TODO: Is reduce the best approach here? It may actually be trickier to debug
+    #       than the previous version.
     discount_items_range.to_a.reverse.reduce(0) do |savings, n|
       groups = []
       items = order.dup
