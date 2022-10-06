@@ -25,6 +25,9 @@ class DiscountCalculator
     base_order_price - total_discount
   end
 
+  # TODO: Should these methods all be private? Technically, they're implementation details
+  private
+
   def discount_for_group_size(size)
     return {price_savings: 0} if size == 1
 
