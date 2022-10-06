@@ -2,7 +2,7 @@ require_relative "../discount_calculator"
 
 RSpec.describe DiscountCalculator do
   context "#calculate" do
-    it "applies only the 5-piece discount if that's all that's possible" do
+    it "applies the greatest discount for a simple order" do
       order = {shirt_1: 1, shirt_2: 1, shirt_3: 1, shirt_4: 1, shirt_5: 1}
       expected_price_cents = 3000
 
