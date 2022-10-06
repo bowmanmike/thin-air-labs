@@ -25,22 +25,6 @@ class DiscountCalculator
 
   private
 
-  # Returns the discount record corresponding to the number of items in the group.
-  # Returns `nil` if no discount can be applied for the given size
-  def discount_for_group_size(size)
-    DISCOUNTS.find { |discount| discount[:items] == size }
-  end
-
-  # Returns either the `:price_savings` field from the relevant discount, or 0
-  # if no discount can be applied to the provided size
-  def price_savings_for_group_size(size)
-    discount = discount_for_group_size(size)
-
-    return 0 unless discount
-
-    discount[:price_savings]
-  end
-
   # Walks through every possible combination of discounts and returns the
   # largest possible total savings.
   def greatest_possible_amount_saved
@@ -62,6 +46,22 @@ class DiscountCalculator
         savings
       end
     end
+  end
+
+  # Returns the discount record corresponding to the number of items in the group.
+  # Returns `nil` if no discount can be applied for the given size
+  def discount_for_group_size(size)
+    DISCOUNTS.find { |discount| discount[:items] == size }
+  end
+
+  # Returns either the `:price_savings` field from the relevant discount, or 0
+  # if no discount can be applied to the provided size
+  def price_savings_for_group_size(size)
+    discount = discount_for_group_size(size)
+
+    return 0 unless discount
+
+    discount[:price_savings]
   end
 
   def normalize_order(raw_order)
