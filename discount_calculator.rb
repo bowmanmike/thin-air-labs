@@ -1,10 +1,4 @@
-class LineItem
-  attr_reader :name
-
-  def initialize(attrs = {})
-    @name = attrs[:name]
-  end
-end
+require_relative "line_item"
 
 class DiscountCalculator
   attr_reader :order
