@@ -11,11 +11,9 @@ RSpec.describe DiscountCalculator do
 
     it "correctly calculates the discount for a complex order" do
       order = {shirt_1: 2, shirt_2: 2, shirt_3: 2, shirt_4: 1, shirt_5: 1}
-      calculator = DiscountCalculator.new(order)
-
       expected_price_cents = 5120
 
-      expect(calculator.calculate).to eq(expected_price_cents)
+      expect(DiscountCalculator.new(order).calculate).to eq(expected_price_cents)
     end
   end
 end
