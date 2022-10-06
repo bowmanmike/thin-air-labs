@@ -3,4 +3,4 @@ ruby "3.1.2"
 
 gem "rspec"
 gem "standard"
-gem "debug"
+gem "pry-byebug"
