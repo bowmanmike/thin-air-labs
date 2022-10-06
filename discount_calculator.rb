@@ -16,7 +16,7 @@ class DiscountCalculator
   end
 
   def calculate
-    possibilities = (2..5).to_a.reverse_each.with_object([]) do |n, ary|
+    possibilities = discount_items_range.to_a.reverse_each.with_object([]) do |n, ary|
       groups = []
       items = order.dup # Create a fresh copy of the order for each iteration so we can check for all possibilities
 
@@ -49,5 +49,9 @@ class DiscountCalculator
     raw_order.reduce([]) do |arr, (name, quantity)|
       arr << quantity.times.map { LineItem.new(name: name) }
     end.flatten
+  end
+
+  def discount_items_range
+    Range.new(*DISCOUNTS.minmax_by { |discount| discount[:items] }.map { |discount| discount[:items] })
   end
 end
