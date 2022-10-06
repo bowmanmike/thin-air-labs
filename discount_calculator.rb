@@ -16,11 +16,11 @@ class DiscountCalculator
   end
 
   def calculate
-    possibilities = generate_possible_discount_combinations
-    discount_combination = biggest_savings_discount_combination(possibilities)
+    total_discount = generate_possible_discount_combinations
+      .then { |combinations| biggest_savings_discount_combination(combinations) }
+      .then { |discount_combination| total_savings_for_discount_combination(discount_combination) }
 
     base_order_price = order.count * SINGLE_SHIRT_PRICE
-    total_discount = total_savings_for_discount_combination(discount_combination)
 
     base_order_price - total_discount
   end
