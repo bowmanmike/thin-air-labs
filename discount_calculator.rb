@@ -1,10 +1,8 @@
-class OrderItem
+class LineItem
   attr_reader :name
-  attr_accessor :discount
 
   def initialize(attrs = {})
     @name = attrs[:name]
-    @discount = nil
   end
 end
 
@@ -20,25 +18,25 @@ class DiscountCalculator
   ].freeze
 
   def initialize(raw_order = {})
-    @order = []
-    normalize_order(raw_order)
+    @order = normalize_order(raw_order)
   end
 
   def calculate
     possibilities = (2..5).to_a.reverse_each.with_object([]) do |n, ary|
       groups = []
-      items = order.dup
+      items = order.dup # Create a fresh copy of the order for each iteration so we can check for all possibilities
 
       until items.empty?
-        group = items.uniq { |item| item.name }.take(n)
+        group = items.uniq { |item| item.name }.take(n) # Take the biggest possible group of unique items, up to size n
         groups << group
-        items -= group
+        items -= group # Array#- remove *all* matching elements, so we can't just use symbols or strings to represent items
       end
       ary << groups
     end
 
     result = possibilities.max_by do |basket|
       basket.map do |discount_group|
+        # TODO: probably should be able to dedupe the discount_for_group_size calls in this section
         discount_for_group_size(discount_group.count)[:price_savings]
       end.sum
     end
@@ -54,8 +52,8 @@ class DiscountCalculator
   end
 
   def normalize_order(raw_order)
-    raw_order.each do |name, quantity|
-      quantity.times { @order << OrderItem.new(name: name) }
-    end
+    raw_order.reduce([]) do |arr, (name, quantity)|
+      arr << quantity.times.map { LineItem.new(name: name) }
+    end.flatten
   end
 end
