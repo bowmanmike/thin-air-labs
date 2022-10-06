@@ -29,12 +29,16 @@ class DiscountCalculator
     DISCOUNTS.find { |discount| discount[:items] == size } || {price_savings: 0}
   end
 
+  def price_savings_for_group_size(size)
+    discount_for_group_size(size)[:price_savings]
+  end
+
   def total_savings_for_discount_combination(group)
-    group.map(&:count).map { |c| discount_for_group_size(c)[:price_savings] }.sum
+    group.map(&:count).map { |c| price_savings_for_group_size(c) }.sum
   end
 
   def generate_possible_discount_combinations
-    discount_items_range.to_a.reverse_each.with_object([]) do |n, ary|
+    discount_items_range.to_a.reverse_each.with_object([]) do |n, combinations|
       groups = []
       items = order.dup # Create a fresh copy of the order for each iteration so we can check for all possibilities
 
@@ -43,15 +47,14 @@ class DiscountCalculator
         groups << group
         items -= group # Array#- remove *all* matching elements, so we can't just use symbols or strings to represent items
       end
-      ary << groups
+      combinations << groups
     end
   end
 
   def biggest_savings_discount_combination(possibilities)
     possibilities.max_by do |basket|
       basket.map do |discount_group|
-        # TODO: probably should be able to dedupe the discount_for_group_size calls in this section
-        discount_for_group_size(discount_group.count)[:price_savings]
+        price_savings_for_group_size(discount_group.count)
       end.sum
     end
   end
