@@ -16,7 +16,25 @@ class DiscountCalculator
   end
 
   def calculate
-    possibilities = discount_items_range.to_a.reverse_each.with_object([]) do |n, ary|
+    possibilities = generate_possible_discount_combinations
+    discount_combination = biggest_savings_discount_combination(possibilities)
+
+    base_order_price = order.count * SINGLE_SHIRT_PRICE
+    total_discount = total_savings_for_discount_combination(discount_combination)
+
+    base_order_price - total_discount
+  end
+
+  def discount_for_group_size(size)
+    DISCOUNTS.find { |discount| discount[:items] == size } || {price_savings: 0}
+  end
+
+  def total_savings_for_discount_combination(group)
+    group.map(&:count).map { |c| discount_for_group_size(c)[:price_savings] }.sum
+  end
+
+  def generate_possible_discount_combinations
+    discount_items_range.to_a.reverse_each.with_object([]) do |n, ary|
       groups = []
       items = order.dup # Create a fresh copy of the order for each iteration so we can check for all possibilities
 
@@ -27,22 +45,15 @@ class DiscountCalculator
       end
       ary << groups
     end
+  end
 
-    result = possibilities.max_by do |basket|
+  def biggest_savings_discount_combination(possibilities)
+    possibilities.max_by do |basket|
       basket.map do |discount_group|
         # TODO: probably should be able to dedupe the discount_for_group_size calls in this section
         discount_for_group_size(discount_group.count)[:price_savings]
       end.sum
     end
-
-    base_price = order.count * SINGLE_SHIRT_PRICE
-    total_discount = result.map(&:count).map { |c| discount_for_group_size(c)[:price_savings] }.sum
-
-    base_price - total_discount
-  end
-
-  def discount_for_group_size(size)
-    DISCOUNTS.find { |discount| discount[:items] == size } || {price_savings: 0}
   end
 
   def normalize_order(raw_order)
