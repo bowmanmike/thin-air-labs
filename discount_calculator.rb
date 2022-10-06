@@ -19,14 +19,10 @@ class DiscountCalculator
   # discount has been applied
   def calculate
     base_order_price = order.count * SINGLE_SHIRT_PRICE
-    total_discount = generate_possible_discount_combinations
-      .then { |combinations| biggest_savings_discount_combination(combinations) }
-      .then { |discount_combination| total_savings_for_discount_combination(discount_combination) }
 
-    base_order_price - total_discount
+    base_order_price - greatest_possible_amount_saved
   end
 
-  # TODO: Should these methods all be private? Technically, they're implementation details
   private
 
   # Returns the discount record corresponding to the number of items in the group.
@@ -45,31 +41,26 @@ class DiscountCalculator
     discount[:price_savings]
   end
 
-  def total_savings_for_discount_combination(group)
-    group.map(&:count).map { |c| price_savings_for_group_size(c) }.sum
-  end
-
-  # TODO: may be possible to replace these two following methods with a single call to reduce
-  # Enumerates all applicable discount combinations for an order.
-  def generate_possible_discount_combinations
-    discount_items_range.to_a.reverse_each.with_object([]) do |n, combinations|
+  # Walks through every possible combination of discounts and returns the
+  # largest possible total savings.
+  def greatest_possible_amount_saved
+    discount_items_range.to_a.reverse.reduce(0) do |savings, n|
       groups = []
-      items = order.dup # Create a fresh copy of the order for each iteration so we can check for all possibilities
+      items = order.dup
 
       until items.empty?
         group = items.uniq { |item| item.name }.take(n) # Take the biggest possible group of unique items, up to size n
         groups << group
         items -= group # Array#- remove *all* matching elements, so we can't just use symbols or strings to represent items
       end
-      combinations << groups
-    end
-  end
 
-  def biggest_savings_discount_combination(possibilities)
-    possibilities.max_by do |basket|
-      basket.map do |discount_group|
-        price_savings_for_group_size(discount_group.count)
-      end.sum
+      amount_saved = groups.map { |group| price_savings_for_group_size(group.count) }.sum
+
+      if amount_saved > savings
+        amount_saved
+      else
+        savings
+      end
     end
   end
 
