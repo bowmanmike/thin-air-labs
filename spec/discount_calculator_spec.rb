@@ -24,9 +24,6 @@ RSpec.describe DiscountCalculator do
     end
 
     it "applies the correct discount for an order with multiple groups" do
-      # Largest single discount combination would be one group of 5 and one single item left over
-      # However, this doesn't result in the maximum discount. One group of 4 and one group
-      # of 2 provide better savings.
       order = {shirt_1: 2, shirt_2: 1, shirt_3: 1, shirt_4: 1, shirt_5: 1}
       expected_price_cents = 3800
 
