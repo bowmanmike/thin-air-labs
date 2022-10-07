@@ -30,7 +30,7 @@ class DiscountCalculator
   def greatest_possible_amount_saved
     discount_items_range.to_a.reverse.reduce(0) do |savings, n|
       groups = []
-      items = order.dup
+      items = order.dup # Create a fresh copy of the order for each iteration so we can check for all possibilities
 
       until items.empty?
         group = items.uniq { |item| item.name }.take(n) # Take the biggest possible group of unique items, up to size n
