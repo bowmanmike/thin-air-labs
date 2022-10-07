@@ -15,7 +15,7 @@ class DiscountCalculator
     @order = normalize_order(raw_order)
   end
 
-  # Returns the final price (in cents) of the order, in cents, *after* the greatest possible
+  # Returns the final price (in cents) of the order, *after* the greatest possible
   # discount has been applied
   def calculate
     base_order_price = order.count * SINGLE_SHIRT_PRICE
